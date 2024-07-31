@@ -2,22 +2,6 @@ data "databricks_spark_version" "latest" {
   latest = true
 }
 
-resource "databricks_cluster" "dlt_cluster" {
-  cluster_name            = "dlt-cluster"
-  spark_version           = data.databricks_spark_version.latest.id
-  node_type_id            = "i3.xlarge"
-  autotermination_minutes = 20
-    spark_conf = {
-    "spark.databricks.cluster.profile" : "singleNode"
-    "spark.master" : "local[*]"
-  }
-
-  custom_tags = {
-    "ResourceClass" = "SingleNode"
-  }
-  num_workers = 0
-}
-
 resource "databricks_repo" "houseful_technical_interview" {
   url = var.git_url
 }
@@ -29,10 +13,17 @@ resource "databricks_git_credential" "psycheshaman" {
 }
 
 resource "databricks_pipeline" "listing_pipeline" {
-  name           = "Listing Pipeline"
-  storage        = "dbfs:/pipelines/listing-pipeline"
-  configuration  = {
-    "spark.master" = "local[*]"
+  name       = "Listing Pipeline"
+  storage    = "dbfs:/pipelines/listing-pipeline"
+  continuous = false
+
+  cluster {
+    label       = "default"
+    num_workers = 1
+    node_type_id  = "i3.xlarge"
+    custom_tags = {
+      cluster_type = "default"
+    }
   }
 
   library {
@@ -40,6 +31,20 @@ resource "databricks_pipeline" "listing_pipeline" {
       path = "${databricks_repo.houseful_technical_interview.path}/pipelines/dlt_process_listings.py"
     }
   }
+}
 
-  continuous = false  # Set to false to trigger the pipeline manually to save costs
+resource "databricks_secret_scope" "aws_s3_access" {
+  name = "aws-s3-access"
+}
+
+resource "databricks_secret" "aws_access_key" {
+  key          = "aws-access-key-id"
+  string_value = var.aws_access_key_id
+  scope        = databricks_secret_scope.aws_s3_access.name
+}
+
+resource "databricks_secret" "aws_secret_key" {
+  key          = "aws-secret-access-key"
+  string_value = var.aws_secret_access_key
+  scope        = databricks_secret_scope.aws_s3_access.name
 }
