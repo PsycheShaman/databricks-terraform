@@ -78,3 +78,8 @@ resource "aws_iam_role_policy" "databricks_policy" {
     ]
   })
 }
+
+resource "aws_iam_instance_profile" "databricks_instance_profile" {
+  name = "databricks_instance_profile"
+  role = aws_iam_role.databricks_role.name
+}

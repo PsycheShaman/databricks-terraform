@@ -1,4 +1,5 @@
 import dlt
+import dbutils
 from pyspark.sql.functions import col
 
 # Define the schema for the JSON files
@@ -32,7 +33,7 @@ schema = """
   summary_description STRING
 """
 
-# Ingest JSON data from S3
+# Ingest JSON data from S3 using Autoloader
 @dlt.table(
   comment="Raw listings data"
 )
@@ -41,36 +42,11 @@ def raw_listings():
     spark.readStream
     .format("cloudFiles")
     .option("cloudFiles.format", "json")
+    .option("cloudFiles.useNotifications", "true")
+    .option("cloudFiles.includeExistingFiles", "true")
+    .option("cloudFiles.region", "eu-west-1")  # Specify your AWS region
+    .option("cloudFiles.access.key", dbutils.secrets.get("aws-s3-access", "aws-access-key-id"))
+    .option("cloudFiles.secret.key", dbutils.secrets.get("aws-s3-access", "aws-secret-access-key"))
     .schema(schema)
     .load("s3a://z-raw/listings/")
-  )
-
-# Flatten the nested fields and create a table suitable for querying
-@dlt.table(
-  comment="Flattened listings data"
-)
-def flattened_listings():
-  return (
-    dlt.read("raw_listings")
-    .select(
-      col("source"),
-      col("derived.parking").alias("parking"),
-      col("derived.outside_space").alias("outside_space"),
-      col("pricing.price"),
-      col("pricing.transaction_type"),
-      col("category"),
-      col("location.coordinates.latitude"),
-      col("location.coordinates.longitude"),
-      col("location.postal_code"),
-      col("location.street_name"),
-      col("location.country_code"),
-      col("location.town_or_city"),
-      col("bathrooms"),
-      col("listing_id"),
-      col("creation_date"),
-      col("total_bedrooms"),
-      col("display_address"),
-      col("life_cycle_status"),
-      col("summary_description")
-    )
   )
