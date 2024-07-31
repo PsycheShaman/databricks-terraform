@@ -1,0 +1,21 @@
+# Define environment variables for Databricks credentials
+export DATABRICKS_HOST ?= ""
+export DATABRICKS_CLIENT_ID ?= ""
+export DATABRICKS_CLIENT_SECRET ?= ""
+
+.PHONY: init plan apply
+
+# Initialize Terraform
+init:
+	@echo "Initializing Terraform..."
+	terraform init
+
+# Plan the deployment
+plan:
+	@echo "Planning Terraform deployment..."
+	terraform plan -var databricks_host="$(DATABRICKS_HOST)" -var databricks_token="$(DATABRICKS_TOKEN)"
+
+# Apply the deployment
+apply:
+	@echo "Applying Terraform deployment..."
+	terraform apply -var databricks_host="$(DATABRICKS_HOST)" -var databricks_token="$(DATABRICKS_TOKEN)"
