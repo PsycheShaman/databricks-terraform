@@ -58,7 +58,7 @@ def generate_listing(listing_id):
         "creation_date": datetime.now().isoformat(),
         "total_bedrooms": random.randint(1, 6),
         "display_address": f"{random.choice(street_names)}, {random.choice(towns_or_cities)} {random.choice(postal_codes)}",
-        "life_cycle_status": random.choice(["active", "sold", "removed"]),
+        "life_cycle_status": random.choice(["active", "sold"]),
         "summary_description": "This is a sample description for a property listing."
     }
     return listing
@@ -69,7 +69,7 @@ def lambda_handler(event, context):
 
         try:
             # Check if the listing already exists
-            obj = s3.get_object(Bucket=BUCKET_NAME, Key=f"{listing_id}.json")
+            obj = s3.get_object(Bucket=BUCKET_NAME, Key=f"listings/{listing_id}.json")
             listing = json.loads(obj['Body'].read().decode('utf-8'))
             action = random.choice(['update', 'delete'])
 
@@ -77,18 +77,18 @@ def lambda_handler(event, context):
                 # Update a random attribute
                 listing['pricing']['price'] = random.randint(50000, 1000000)
                 listing['life_cycle_status'] = random.choice(["active", "sold", "removed"])
-                print(f"Updated listing {listing_id}")
-                s3.put_object(Bucket=BUCKET_NAME, Key=f"{listing_id}.json", Body=json.dumps(listing))
+                print(f"Updated listing listings/{listing_id}")
+                s3.put_object(Bucket=BUCKET_NAME, Key=f"listings/{listing_id}.json", Body=json.dumps(listing))
             else:
                 # Delete the listing
-                s3.delete_object(Bucket=BUCKET_NAME, Key=f"{listing_id}.json")
-                print(f"Deleted listing {listing_id}")
+                s3.delete_object(Bucket=BUCKET_NAME, Key=f"listings/{listing_id}.json")
+                print(f"Deleted listing listings/{listing_id}")
 
         except s3.exceptions.NoSuchKey:
             # Create a new listing
             listing = generate_listing(listing_id)
-            print(f"Created new listing {listing_id}")
-            s3.put_object(Bucket=BUCKET_NAME, Key=f"{listing_id}.json", Body=json.dumps(listing))
+            print(f"Created new listing listings/{listing_id}")
+            s3.put_object(Bucket=BUCKET_NAME, Key=f"listings/{listing_id}.json", Body=json.dumps(listing))
 
     return {
         'statusCode': 200,
