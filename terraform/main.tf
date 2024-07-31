@@ -2,7 +2,7 @@
 
 terraform {
   backend "s3" {
-    bucket = "z-raw"
+    bucket = "z--tf"
     key    = "terraform/state"
     region = "eu-west-1"
   }
@@ -14,6 +14,10 @@ terraform {
       source = "databricks/databricks"
       version = "1.49.1"
     }
+     aws = {
+      source = "hashicorp/aws"
+      version = "5.60.0"
+    }
   }
 }
 
@@ -23,3 +27,6 @@ provider "databricks" {
   client_secret = var.databricks_client_secret
 }
 
+provider "aws" {
+  region = "eu-west-1"
+}
