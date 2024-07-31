@@ -1,13 +1,21 @@
+data "databricks_spark_version" "latest" {
+  latest = true
+}
+
 resource "databricks_cluster" "dlt_cluster" {
   cluster_name            = "dlt-cluster"
-  spark_version           = "7.3.x-scala2.12"
+  spark_version           = data.databricks_spark_version.latest.id
   node_type_id            = "i3.xlarge"
   autotermination_minutes = 20
-
-  autoscale {
-    min_workers = 1
-    max_workers = 3
+    spark_conf = {
+    "spark.databricks.cluster.profile" : "singleNode"
+    "spark.master" : "local[*]"
   }
+
+  custom_tags = {
+    "ResourceClass" = "SingleNode"
+  }
+  num_workers = 0
 }
 
 resource "databricks_repo" "houseful_technical_interview" {
@@ -29,7 +37,7 @@ resource "databricks_pipeline" "listing_pipeline" {
 
   library {
     file {
-      path = "${databricks_repo.houseful_technical_interview.path}/dlt_process_listings.py"
+      path = "${databricks_repo.houseful_technical_interview.path}/pipelines/dlt_process_listings.py"
     }
   }
 
