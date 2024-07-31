@@ -2,6 +2,8 @@
 **/*/.env
 .DS_Store
 **/*/.DS_Store
+terraform/.terraform*
+.terraform/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
