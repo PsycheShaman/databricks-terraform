@@ -1,9 +1,3 @@
-# Makefile
-
-export DATABRICKS_HOST ?= ""
-export DATABRICKS_CLIENT_ID ?= ""
-export DATABRICKS_CLIENT_SECRET ?= ""
-
 .PHONY: init plan apply
 
 # Initialize Terraform

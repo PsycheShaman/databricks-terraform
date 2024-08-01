@@ -25,6 +25,7 @@ def raw_listings_s3_events():
     .option("cloudFiles.format", "json")
     .option("cloudFiles.queueUrl", 'https://sqs.eu-west-1.amazonaws.com/889562587392/raw-listing-bucket-events-queue')
     .option("cloudFiles.region", "eu-west-1")
+    .option("cloudFiles.useNotifications", "true")
     .option("cloudFiles.awsAccessKey", dbutils.secrets.get("aws-s3-access", "aws-access-key-id"))
     .option("cloudFiles.awsSecretKey", dbutils.secrets.get("aws-s3-access", "aws-secret-access-key"))
     .schema(sqs_schema)
