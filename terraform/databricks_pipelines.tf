@@ -2,6 +2,11 @@ data "databricks_spark_version" "latest" {
   latest = true
 }
 
+resource "databricks_dbfs_file" "bronze_dlt_pipeline" {
+  source = "databricks_dlt_pipelines/listings/bronze.py"
+  path   = "/dbfs/databricks_dlt_pipelines/listings/bronze.py"
+}
+
 resource "databricks_pipeline" "listings_bronze" {
   # Ingests events from SQS, containing details about `listing` JSON objects as they are created, deleted or updated on S3. These messages are created by a Lambda function triggered by S3 events.
 
@@ -23,7 +28,7 @@ resource "databricks_pipeline" "listings_bronze" {
 
   library {
     file {
-      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/listings/bronze.py"
+      path = databricks_dbfs_file.bronze_dlt_pipeline.path
     }
   }
 }
