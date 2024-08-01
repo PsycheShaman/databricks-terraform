@@ -20,7 +20,7 @@ resource "databricks_pipeline" "listing_pipeline" {
   cluster {
     label       = "default"
     num_workers = 1
-    node_type_id  = "i3.xlarge"
+    node_type_id  = "t3.medium"
     custom_tags = {
       cluster_type = "default"
     }
