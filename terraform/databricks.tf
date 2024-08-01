@@ -18,6 +18,12 @@ resource "databricks_pipeline" "listing_pipeline" {
   continuous = false
   development = true
 
+  configuration = {
+    "spark.master" = "local[*]"
+    "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
+    "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
+  }
+
   cluster {
     label       = "default"
     num_workers = 1
