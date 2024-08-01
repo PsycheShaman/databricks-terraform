@@ -26,7 +26,7 @@ def lambda_handler(event, context):
         if event_type == 'create':
             try:
                 obj = s3.get_object(Bucket=bucket_name, Key=object_key)
-                file_contents = obj['Body'].read().decode('utf-8')
+                file_contents = json.loads(obj['Body'].read().decode('utf-8'))
             except Exception as e:
                 print(f"Error getting object {object_key} from bucket {bucket_name}: {e}")
         
