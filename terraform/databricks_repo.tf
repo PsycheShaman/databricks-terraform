@@ -8,4 +8,3 @@ resource "databricks_git_credential" "psycheshaman" {
   git_provider          = "gitHub"
   personal_access_token = var.git_personal_access_token
 }
-

@@ -1,13 +1,3 @@
-# Define a Schema within the Catalog
-resource "databricks_schema" "zoopla" {
-  catalog_name = "houseful"
-  name = "zoopla"
-}
-
-data "databricks_spark_version" "latest" {
-  latest = true
-}
-
 resource "databricks_secret_scope" "aws_s3_access" {
   name = "aws-s3-access"
 }
