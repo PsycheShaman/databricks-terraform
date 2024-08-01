@@ -1,6 +1,6 @@
-.PHONY: all clean zip apply_terraform
+.PHONY: all clean zip apply_terraform git_push
 
-all: zip apply_terraform
+all: zip apply_terraform git_push
 
 # Step to zip the lambda functions
 zip: zoopla_publishing_service.zip raw_listings_s3_event_lambda.zip
@@ -17,3 +17,6 @@ apply_terraform:
 
 clean:
 	rm -f zoopla_publishing_service.zip raw_listings_s3_event_lambda.zip
+
+git_push:
+	git add --all .; git commit -am "update"; git push
