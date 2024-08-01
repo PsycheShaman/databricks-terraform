@@ -1,12 +1,9 @@
 import json
 import boto3
+import hashlib
 from datetime import datetime
 
 s3 = boto3.client('s3')
-sqs = boto3.client('sqs')
-
-# Replace with your SQS queue URL
-SQS_QUEUE_URL = 'https://sqs.eu-west-1.amazonaws.com/889562587392/raw-listing-bucket-events-queue'
 
 def lambda_handler(event, context):
     for record in event['Records']:
@@ -42,15 +39,30 @@ def lambda_handler(event, context):
             'file_contents': file_contents
         }
         
-        # Send message to SQS
+        # Hash the message payload to create a unique filename
+        message_hash = hashlib.md5(json.dumps(message_payload).encode()).hexdigest()
+
+        message_payload = {
+            'bucket_name': bucket_name,
+            'object_key': object_key,
+            'event_id': message_hash,
+            'event_type': event_type,
+            'event_time': event_time,
+            'file_contents': file_contents,
+        }
+
+        s3_key = f"listings/{message_hash}.json"
+        
+        # Write message payload to S3
         try:
-            sqs.send_message(
-                QueueUrl=SQS_QUEUE_URL,
-                MessageBody=json.dumps(message_payload)
+            s3.put_object(
+                Bucket='z-staging',
+                Key=s3_key,
+                Body=json.dumps(message_payload)
             )
-            print(f"Message sent to SQS: {message_payload}")
+            print(f"Message written to S3: {s3_key}")
         except Exception as e:
-            print(f"Error sending message to SQS: {e}")
+            print(f"Error writing message to S3: {e}")
         
     return {
         'statusCode': 200,

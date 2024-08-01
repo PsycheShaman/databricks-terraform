@@ -16,8 +16,8 @@ resource "aws_iam_role" "lambda_exec_role" {
 }
 
 resource "aws_iam_role_policy" "lambda_exec_policy" {
-  name   = "lambda_exec_policy"
-  role   = var.lambda_exec_role_name
+  name = "lambda_exec_policy"
+  role = var.lambda_exec_role_name
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -37,12 +37,17 @@ resource "aws_iam_role_policy" "lambda_exec_policy" {
           "s3:DeleteObject"
         ],
         Effect   = "Allow",
-        Resource = "arn:aws:s3:::${var.s3_bucket}/*"
+        Resource = "*"
       },
       {
-          "Effect": "Allow",
-          "Action": "sqs:SendMessage",
-          "Resource": "arn:aws:sqs:*"
+        "Effect" : "Allow",
+        "Action" : "sqs:*",
+        "Resource" : "arn:aws:sqs:*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : "sqs:*",
+        "Resource" : "arn:aws:sqs:*"
       }
     ]
   })
@@ -66,8 +71,8 @@ resource "aws_iam_role" "databricks_role" {
 }
 
 resource "aws_iam_role_policy" "databricks_policy" {
-  name   = "databricks_policy"
-  role   = aws_iam_role.databricks_role.id
+  name = "databricks_policy"
+  role = aws_iam_role.databricks_role.id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [

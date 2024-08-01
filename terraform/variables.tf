@@ -31,19 +31,19 @@ variable "databricks_client_secret" {
 }
 
 variable "lambda_exec_role_id" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "lambda_exec_role_name" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "git_url" {
   description = "URL of the Git repository"
   type        = string
-  default = "https://github.com/PsycheShaman/houseful-technical-interview.git"
+  default     = "https://github.com/PsycheShaman/houseful-technical-interview.git"
 }
 
 variable "git_branch" {
@@ -59,16 +59,16 @@ variable "git_personal_access_token" {
 }
 
 variable "git_username" {
-  type = string
+  type    = string
   default = "PsycheShaman"
 }
 
 variable "aws_access_key_id" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "aws_secret_access_key" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }

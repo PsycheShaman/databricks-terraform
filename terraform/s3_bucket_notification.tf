@@ -6,6 +6,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
     events              = ["s3:ObjectCreated:*", "s3:ObjectRemoved:*"]
 
     filter_suffix = ".json"
+    filter_prefix = "listings/"
   }
 }
 

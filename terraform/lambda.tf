@@ -20,7 +20,7 @@ resource "aws_lambda_function" "raw_listings_s3_event_lambda" {
   handler          = "lambda_function.lambda_handler"
   runtime          = "python3.10"
   source_code_hash = filebase64sha256("raw_listings_s3_event_lambda.zip")
-  
+
   environment {
     variables = {
       BUCKET_NAME = var.s3_bucket
