@@ -1,9 +1,3 @@
-# Define a Schema within the Catalog
-resource "databricks_schema" "zoopla" {
-  catalog_name = "houseful"
-  name         = "zoopla"
-}
-
 resource "databricks_schema" "zoopla_bronze" {
   catalog_name = "houseful"
   name         = "zoopla_bronze"
