@@ -39,7 +39,7 @@ resource "databricks_pipeline" "listing_pipeline" {
 
   library {
     file {
-      path = "${databricks_repo.houseful_technical_interview.path}/pipelines/dlt_process_listings.py"
+      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/dlt_process_listings.py"
     }
   }
 }
