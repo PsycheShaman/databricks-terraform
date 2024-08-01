@@ -25,8 +25,6 @@ def raw_listings_s3_events():
     .format("cloudFiles")
     .option("cloudFiles.format", "json")
     .option("cloudFiles.region", "eu-west-1")
-    .option("cloudFiles.awsAccessKey", dbutils.secrets.get("aws-s3-access", "aws-access-key-id"))
-    .option("cloudFiles.awsSecretKey", dbutils.secrets.get("aws-s3-access", "aws-secret-access-key"))
     .schema(schema)
     .load("s3a://zoopla-staging/listings/")
   )

@@ -78,29 +78,29 @@ resource "databricks_pipeline" "listings_gold" {
   }
 }
 
-resource "databricks_pipeline" "original_end_to_end_listing_pipeline_deprecated" {
-  name        = "End-End Listing Pipeline (Deprecated)"
-  continuous  = false
-  development = true
-  catalog     = "houseful"
-  target      = "zoopla"
+# resource "databricks_pipeline" "original_end_to_end_listing_pipeline_deprecated" {
+#   name        = "End-End Listing Pipeline (Deprecated)"
+#   continuous  = false
+#   development = true
+#   catalog     = "houseful"
+#   target      = "zoopla"
 
-  configuration = {
-    "spark.master"                   = "local[*]"
-    "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
-    "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
-  }
+#   configuration = {
+#     "spark.master"                   = "local[*]"
+#     "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
+#     "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
+#   }
 
-  cluster {
-    label        = "default"
-    num_workers  = 1
-    node_type_id = "m5.large"
-  }
+#   cluster {
+#     label        = "default"
+#     num_workers  = 1
+#     node_type_id = "m5.large"
+#   }
 
-  library {
-    file {
-      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/dlt_process_listings.py"
-    }
-  }
-}
+#   library {
+#     file {
+#       path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/dlt_process_listings.py"
+#     }
+#   }
+# }
 
