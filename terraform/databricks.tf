@@ -1,3 +1,9 @@
+# Define a Schema within the Catalog
+resource "databricks_schema" "zoopla" {
+  catalog_name = "houseful"
+  name = "zoopla"
+}
+
 data "databricks_spark_version" "latest" {
   latest = true
 }
@@ -14,9 +20,10 @@ resource "databricks_git_credential" "psycheshaman" {
 
 resource "databricks_pipeline" "listing_pipeline" {
   name       = "Listing Pipeline"
-  storage    = "dbfs:/pipelines/listing-pipeline"
   continuous = false
   development = true
+  catalog = "houseful"
+  target = "zoopla"
 
   configuration = {
     "spark.master" = "local[*]"

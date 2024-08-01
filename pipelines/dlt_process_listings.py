@@ -37,7 +37,13 @@ schema = """
 
 # Ingest JSON data from S3 using Auto Loader
 @dlt.table(
-  comment="Bronze table: Raw listings data"
+  name="raw_listings",
+  catalog="houseful",
+  schema="zoopla",
+  comment="Bronze table: Raw listings data",
+  table_properties={
+    "quality": "bronze"
+  }
 )
 def raw_listings():
   return (
@@ -55,6 +61,9 @@ def raw_listings():
 
 # Flatten the JSON structure and add a date column
 @dlt.table(
+  name="flattened_listings",
+  catalog="houseful",
+  schema="zoopla",
   comment="Silver table: Flattened listings data",
   table_properties={
     "quality": "silver"
@@ -89,6 +98,9 @@ def flattened_listings():
 
 # Create a daily snapshot table
 @dlt.table(
+  name="daily_snapshot",
+  catalog="houseful",
+  schema="zoopla",
   comment="Gold table: Daily snapshot of listings",
   table_properties={
     "quality": "gold"
