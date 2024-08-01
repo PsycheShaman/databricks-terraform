@@ -38,6 +38,11 @@ resource "aws_iam_role_policy" "lambda_exec_policy" {
         ],
         Effect   = "Allow",
         Resource = "arn:aws:s3:::${var.s3_bucket}/*"
+      },
+      {
+          "Effect": "Allow",
+          "Action": "sqs:SendMessage",
+          "Resource": "arn:aws:sqs:*"
       }
     ]
   })

@@ -20,9 +20,10 @@ resource "databricks_git_credential" "psycheshaman" {
 
 resource "databricks_pipeline" "listing_pipeline" {
   name       = "Listing Pipeline"
-  storage    = "dbfs:/pipelines/listing-pipeline"
   continuous = false
   development = true
+  catalog = "houseful"
+  target = "zoopla"
 
   configuration = {
     "spark.master" = "local[*]"
