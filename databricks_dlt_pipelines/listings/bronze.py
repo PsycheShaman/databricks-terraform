@@ -12,9 +12,7 @@ sqs_schema = StructType([
 
 # Read messages from SQS using Auto Loader
 @dlt.table(
-  name="raw_listings_s3_events",
-  catalog="houseful",
-  schema="zoopla",
+  name="listings_bronze",
   comment="Bronze table: Raw listings data containing S3 events relating to json objects for zoopla listings",
   table_properties={
     "quality": "bronze"

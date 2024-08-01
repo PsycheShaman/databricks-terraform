@@ -18,32 +18,6 @@ resource "databricks_git_credential" "psycheshaman" {
   personal_access_token = var.git_personal_access_token
 }
 
-resource "databricks_pipeline" "listing_pipeline" {
-  name       = "Listing Pipeline"
-  continuous = false
-  development = true
-  catalog = "houseful"
-  target = "zoopla"
-
-  configuration = {
-    "spark.master" = "local[*]"
-    "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
-    "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
-  }
-
-  cluster {
-    label       = "default"
-    num_workers = 1
-    node_type_id  = "m5.large"
-  }
-
-  library {
-    file {
-      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/dlt_process_listings.py"
-    }
-  }
-}
-
 resource "databricks_secret_scope" "aws_s3_access" {
   name = "aws-s3-access"
 }
