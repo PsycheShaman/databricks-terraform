@@ -56,7 +56,7 @@ def raw_listings():
     .option("cloudFiles.awsAccessKey", dbutils.secrets.get("aws-s3-access", "aws-access-key-id"))
     .option("cloudFiles.awsSecretKey", dbutils.secrets.get("aws-s3-access", "aws-secret-access-key"))
     .schema(schema)
-    .load("s3a://z-raw/listings/")
+    .load("s3a://zoopla-raw/listings/")
   )
 
 # Flatten the JSON structure and add a date column

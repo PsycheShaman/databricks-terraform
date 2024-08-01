@@ -6,6 +6,14 @@ resource "aws_s3_bucket" "z_staging" {
   bucket = "z-staging"
 }
 
+resource "aws_s3_bucket" "zoopla_raw" {
+  bucket = "zoopla-raw"
+}
+
+resource "aws_s3_bucket" "zoopla_staging" {
+  bucket = "zoopla-staging"
+}
+
 resource "aws_s3_bucket_versioning" "versioning_example" {
   bucket = aws_s3_bucket.z_raw.id
   versioning_configuration {

@@ -2,11 +2,6 @@ data "databricks_spark_version" "latest" {
   latest = true
 }
 
-resource "databricks_dbfs_file" "bronze_dlt_pipeline" {
-  source = "databricks_dlt_pipelines/listings/bronze.py"
-  path   = "/dbfs/databricks_dlt_pipelines/listings/bronze.py"
-}
-
 resource "databricks_pipeline" "listings_bronze" {
   # Ingests events from SQS, containing details about `listing` JSON objects as they are created, deleted or updated on S3. These messages are created by a Lambda function triggered by S3 events.
 
@@ -14,7 +9,7 @@ resource "databricks_pipeline" "listings_bronze" {
   continuous  = false
   development = true
   catalog     = "houseful"
-  target      = "zoopla"
+  target      = "zoopla_bronze"
 
   configuration = {
     "spark.master" = "local[*]"
@@ -28,7 +23,7 @@ resource "databricks_pipeline" "listings_bronze" {
 
   library {
     file {
-      path = databricks_dbfs_file.bronze_dlt_pipeline.path
+      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/listings/bronze.py"
     }
   }
 }
@@ -39,7 +34,7 @@ resource "databricks_pipeline" "listings_silver" {
   continuous  = false
   development = true
   catalog     = "houseful"
-  target      = "zoopla"
+  target      = "zoopla_silver"
 
   configuration = {
     "spark.master" = "local[*]"
@@ -64,7 +59,7 @@ resource "databricks_pipeline" "listings_gold" {
   continuous  = false
   development = true
   catalog     = "houseful"
-  target      = "zoopla"
+  target      = "zoopla_gold"
 
   configuration = {
     "spark.master" = "local[*]"

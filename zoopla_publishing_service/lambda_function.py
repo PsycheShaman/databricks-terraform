@@ -4,7 +4,7 @@ import random
 from datetime import datetime
 
 s3 = boto3.client('s3')
-BUCKET_NAME = 'z-raw'
+BUCKET_NAME = 'zoopla-raw'
 LISTING_ID_RANGE = 100
 
 # Predefined lists for generating realistic data

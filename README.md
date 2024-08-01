@@ -7,7 +7,7 @@ The purpose of this Lambda function is to simulate the backend publishing servic
 ### Features
 - Generates realistic property listings with attributes such as address, pricing, parking, and outside space.
 - Randomly updates or deletes existing listings.
-- Stores listings in an S3 bucket named `z-raw`.
+- Stores listings in an S3 bucket named `zoopla-raw`.
 
 ## Terraform
 
