@@ -16,14 +16,12 @@ resource "databricks_pipeline" "listing_pipeline" {
   name       = "Listing Pipeline"
   storage    = "dbfs:/pipelines/listing-pipeline"
   continuous = false
+  development = true
 
   cluster {
     label       = "default"
     num_workers = 1
-    node_type_id  = "t3.medium"
-    custom_tags = {
-      cluster_type = "default"
-    }
+    node_type_id  = "m5.large"
   }
 
   library {

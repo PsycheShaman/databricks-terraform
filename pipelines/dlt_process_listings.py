@@ -2,35 +2,37 @@ import dlt
 from pyspark.sql.functions import col, current_date, first
 
 # Define the schema for the JSON files
+
 schema = """
-  source: STRING,
-  derived: STRUCT<
+  source STRING,
+  derived STRUCT<
     parking: ARRAY<STRING>,
     outside_space: ARRAY<STRING>
   >,
-  pricing: STRUCT<
-    price: DOUBLE,
-    transaction_type: STRING
+  pricing STRUCT<
+    price DOUBLE,
+    transaction_type STRING
   >,
-  category: STRING,
-  location: STRUCT<
-    coordinates: STRUCT<
-      latitude: DOUBLE,
-      longitude: DOUBLE
+  category STRING,
+  location STRUCT<
+    coordinates STRUCT<
+      latitude DOUBLE,
+      longitude DOUBLE
     >,
-    postal_code: STRING,
-    street_name: STRING,
-    country_code: STRING,
-    town_or_city: STRING
+    postal_code STRING,
+    street_name STRING,
+    country_code STRING,
+    town_or_city STRING
   >,
-  bathrooms: INTEGER,
-  listing_id: INTEGER,
-  creation_date: TIMESTAMP,
-  total_bedrooms: INTEGER,
-  display_address: STRING,
-  life_cycle_status: STRING,
-  summary_description: STRING
+  bathrooms INTEGER,
+  listing_id INTEGER,
+  creation_date TIMESTAMP,
+  total_bedrooms INTEGER,
+  display_address STRING,
+  life_cycle_status STRING,
+  summary_description STRING
 """
+
 
 
 # Ingest JSON data from S3 using Auto Loader
