@@ -1,6 +1,7 @@
 import dlt
-from pyspark.sql.functions import col, lit, current_timestamp
-from pyspark.sql.types import StructType, StructField, StringType, TimestampType, IntegerType, DoubleType, ArrayType
+from pyspark.sql.functions import col, lit, current_timestamp, row_number
+from pyspark.sql.window import Window
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType, DoubleType, IntegerType, ArrayType
 
 # Define the schema for the file_contents field
 file_contents_schema = StructType([
@@ -45,14 +46,14 @@ schema = StructType([
 
 # Define the Silver table with SCD Type 2
 @dlt.table(
-  name="listings",
+  name="listings_silver",
   comment="Silver table: Flattened listings data with SCD Type 2 functionality",
   table_properties={
     "quality": "silver"
   }
 )
 def listings_silver():
-  bronze_df = dlt.read("listings_bronze")
+  bronze_df = spark.read.table("houseful.zoopla_bronze.listings")
   
   # Flatten the file_contents JSON structure
   flattened_df = bronze_df.select(
@@ -95,7 +96,7 @@ def listings_silver():
   
   merge_query = """
     MERGE INTO listings_silver t
-    USING new_data s
+    USING (SELECT * FROM new_data) s
     ON {merge_condition}
     WHEN MATCHED AND s.event_type = 'delete'
       THEN UPDATE SET t.end_date = s.event_time, t.is_current = False
