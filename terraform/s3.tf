@@ -14,8 +14,8 @@ resource "aws_s3_bucket" "zoopla_staging" {
   bucket = "zoopla-staging"
 }
 
-resource "aws_s3_bucket_versioning" "versioning_example" {
-  bucket = aws_s3_bucket.z_raw.id
+resource "aws_s3_bucket_versioning" "zoopla_raw" {
+  bucket = aws_s3_bucket.zoopla_raw.id
   versioning_configuration {
     status = "Enabled"
   }
