@@ -32,7 +32,7 @@ file_contents_schema = StructType([
     StructField("summary_description", StringType(), True)
 ])
 
-# Define the schema for the SQS messages
+# Define the schema for the S3 event messages
 schema = StructType([
     StructField("bucket_name", StringType(), True),
     StructField("object_key", StringType(), True),

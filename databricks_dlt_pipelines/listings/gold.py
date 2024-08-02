@@ -4,14 +4,14 @@ from pyspark.sql.window import Window
 
 # Define the Gold table with the latest records for each listing
 @dlt.table(
-  name="listings_gold",
+  name="listings",
   comment="Gold table: Latest listings data for each listing currently on the website",
   table_properties={
     "quality": "gold"
   }
 )
 def listings_gold():
-  silver_df = spark.read.table("houseful.zoopla_silver.listings_silver")
+  silver_df = spark.table("houseful.zoopla_silver.listings")
   
   # Define the window specification
   window_spec = Window.partitionBy("listing_id").orderBy(col("event_time").desc())

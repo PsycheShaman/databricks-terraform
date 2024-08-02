@@ -1,6 +1,6 @@
 import dlt
-from pyspark.sql.functions import col, lit, current_timestamp
-from pyspark.sql.types import StructType, StructField, StringType, TimestampType, IntegerType, DoubleType, ArrayType
+from pyspark.sql.functions import col
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType, DoubleType, IntegerType, ArrayType
 
 # Define the schema for the file_contents field
 file_contents_schema = StructType([
@@ -33,7 +33,7 @@ file_contents_schema = StructType([
     StructField("summary_description", StringType(), True)
 ])
 
-# Define the schema for the SQS messages
+# Define the schema for the S3 event messages
 schema = StructType([
     StructField("bucket_name", StringType(), True),
     StructField("object_key", StringType(), True),
@@ -43,10 +43,9 @@ schema = StructType([
     StructField("file_contents", file_contents_schema, True)
 ])
 
-# Read messages from the staging directory using Auto Loader
 @dlt.table(
   name="listings",
-  comment="Silver table: Flattened listings data with SCD Type 2 functionality",
+  comment="Silver table: Flattened listings data",
   table_properties={
     "quality": "silver"
   }
@@ -56,11 +55,6 @@ def listings_silver():
   
     # Flatten the file_contents JSON structure
     flattened_df = bronze_df.select(
-        col("bucket_name"),
-        col("object_key"),
-        col("event_id"),
-        col("event_type"),
-        col("event_time"),
         col("file_contents.source").alias("source"),
         col("file_contents.derived.parking").alias("parking"),
         col("file_contents.derived.outside_space").alias("outside_space"),
@@ -82,38 +76,4 @@ def listings_silver():
         col("file_contents.summary_description").alias("summary_description")
     )
   
-    # Implement SCD Type 2
-    scd2_df = (
-        flattened_df
-        .withColumn("effective_date", col("event_time"))
-        .withColumn("end_date", lit(None).cast(TimestampType()))
-        .withColumn("is_current", lit(True))
-    )
-  
-    # Merge with existing data in the silver table to handle updates and deletions
-    merge_condition = "t.listing_id = s.listing_id AND t.end_date IS NULL"
-  
-    merge_query = """
-        MERGE INTO houseful.zoopla_silver.listings t
-        USING new_data s
-        ON {merge_condition}
-        WHEN MATCHED AND s.event_type = 'delete'
-          THEN UPDATE SET t.end_date = s.event_time, t.is_current = False
-        WHEN MATCHED AND s.event_type = 'create'
-          THEN UPDATE SET t.end_date = s.event_time, t.is_current = False
-        WHEN NOT MATCHED
-          THEN INSERT (
-            bucket_name, object_key, event_id, event_type, event_time, source, parking, outside_space, price, transaction_type, category, latitude, longitude,
-            postal_code, street_name, country_code, town_or_city, bathrooms, listing_id, creation_date, total_bedrooms, display_address, life_cycle_status,
-            summary_description, effective_date, end_date, is_current
-          ) VALUES (
-            s.bucket_name, s.object_key, s.event_id, s.event_type, s.event_time, s.source, s.parking, s.outside_space, s.price, s.transaction_type, s.category, s.latitude, s.longitude,
-            s.postal_code, s.street_name, s.country_code, s.town_or_city, s.bathrooms, s.listing_id, s.creation_date, s.total_bedrooms, s.display_address, s.life_cycle_status,
-            s.summary_description, s.effective_date, s.end_date, s.is_current
-          )
-    """.format(merge_condition=merge_condition)
-  
-    scd2_df.createOrReplaceTempView("new_data")
-    spark.sql(merge_query)
-  
-    return spark.table("houseful.zoopla_silver.listings")
+    return flattened_df
