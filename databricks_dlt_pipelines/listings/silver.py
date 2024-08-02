@@ -45,7 +45,7 @@ schema = StructType([
 
 # Define the Silver table with SCD Type 2
 @dlt.table(
-  name="listings_silver",
+  name="listings",
   comment="Silver table: Flattened listings data with SCD Type 2 functionality",
   table_properties={
     "quality": "silver"

@@ -44,7 +44,7 @@ schema = StructType([
 
 # Read messages from the staging directory using Auto Loader
 @dlt.table(
-  name="listings_bronze",
+  name="listings",
   comment="Bronze table: Raw listings data containing S3 events relating to json objects for zoopla listings",
   table_properties={
     "quality": "bronze"
