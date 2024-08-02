@@ -12,7 +12,9 @@ resource "databricks_pipeline" "listings_bronze" {
   target      = "zoopla_bronze"
 
   configuration = {
-    "spark.master" = "local[*]"
+    "spark.master"                   = "local[*]"
+    "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
+    "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
   }
 
   cluster {
@@ -37,7 +39,9 @@ resource "databricks_pipeline" "listings_silver" {
   target      = "zoopla_silver"
 
   configuration = {
-    "spark.master" = "local[*]"
+    "spark.master"                   = "local[*]"
+    "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
+    "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
   }
 
   cluster {
@@ -62,7 +66,9 @@ resource "databricks_pipeline" "listings_gold" {
   target      = "zoopla_gold"
 
   configuration = {
-    "spark.master" = "local[*]"
+    "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
+    "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
+    "spark.master"                   = "local[*]"
   }
 
   cluster {
