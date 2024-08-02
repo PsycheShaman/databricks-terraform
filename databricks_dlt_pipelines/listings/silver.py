@@ -1,6 +1,5 @@
 import dlt
-from pyspark.sql.functions import col, lit, current_timestamp, row_number
-from pyspark.sql.window import Window
+from pyspark.sql.functions import col, lit, current_timestamp
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType, DoubleType, IntegerType, ArrayType
 
 # Define the schema for the file_contents field
@@ -91,13 +90,14 @@ def listings_silver():
     .withColumn("is_current", lit(True))
   )
   
-  # Merge with existing data in the silver table to handle updates and deletions
-  merge_condition = "t.listing_id = s.listing_id AND t.end_date IS NULL"
+  # Create a temporary view to use in the merge statement
+  scd2_df.createOrReplaceTempView("new_data")
   
+  # Merge with existing data in the silver table to handle updates and deletions
   merge_query = """
     MERGE INTO listings_silver t
-    USING (SELECT * FROM new_data) s
-    ON {merge_condition}
+    USING new_data s
+    ON t.listing_id = s.listing_id AND t.end_date IS NULL
     WHEN MATCHED AND s.event_type = 'delete'
       THEN UPDATE SET t.end_date = s.event_time, t.is_current = False
     WHEN MATCHED AND s.event_type = 'create'
@@ -112,9 +112,8 @@ def listings_silver():
         s.postal_code, s.street_name, s.country_code, s.town_or_city, s.bathrooms, s.listing_id, s.creation_date, s.total_bedrooms, s.display_address, s.life_cycle_status,
         s.summary_description, s.effective_date, s.end_date, s.is_current
       )
-  """.format(merge_condition=merge_condition)
+  """
   
-  dlt.create_streaming_view("new_data", scd2_df)
   dlt.sql(merge_query)
   
   return dlt.read("listings_silver")
