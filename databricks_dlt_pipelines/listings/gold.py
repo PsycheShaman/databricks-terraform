@@ -14,14 +14,14 @@ def listings_gold():
   silver_df = spark.table("houseful.zoopla_silver.listings")
   
   # Define the window specification
-  window_spec = Window.partitionBy("listing_id").orderBy(col("event_time").desc())
+  window_spec = Window.partitionBy("listing_id").orderBy(col("creation_date").desc())
   
   # Filter out the latest records and exclude deleted records
   latest_records_df = (
     silver_df
     .withColumn("row_number", row_number().over(window_spec))
     .filter((col("row_number") == 1) & (col("event_type") != "delete"))
-    .drop("row_number", "bucket_name", "object_key", "event_id", "event_type", "event_time")
+    .drop("row_number", "bucket_name", "object_key", "event_id", "event_type")
   )
   
   return latest_records_df
