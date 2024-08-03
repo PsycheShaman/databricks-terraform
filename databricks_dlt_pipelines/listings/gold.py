@@ -2,7 +2,6 @@ import dlt
 from pyspark.sql.functions import col, row_number
 from pyspark.sql.window import Window
 
-# Define the Gold table with the latest records for each listing
 @dlt.table(
   name="listings",
   comment="Gold table: Latest listings data for each listing currently on the website",
