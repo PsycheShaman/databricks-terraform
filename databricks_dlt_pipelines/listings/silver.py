@@ -47,10 +47,13 @@ def listings_silver():
 
   return inferred_df
 
-import dlt
-from pyspark.sql.functions import col, expr
-
-@dlt.view
+@dlt.table(
+  name="listings_silver_stream",
+  comment="Streaming silver table for listings data",
+  table_properties={
+    "quality": "silver"
+  }
+)
 def listings_silver_stream():
     return (
         spark.table("houseful.zoopla_silver.listings")
@@ -82,9 +85,6 @@ def listings_silver_stream():
         )
     )
 
-dlt.create_streaming_table("listings_scd2")
-
-# Apply changes using the apply_changes API to create the SCD Type 2 table
 dlt.apply_changes(
     target="listings_scd2",
     source="listings_silver_stream",
