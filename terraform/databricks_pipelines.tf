@@ -1,7 +1,3 @@
-data "databricks_spark_version" "latest" {
-  latest = true
-}
-
 resource "databricks_pipeline" "listings_bronze" {
   # Ingests events from SQS, containing details about `listing` JSON objects as they are created, deleted or updated on S3. These messages are created by a Lambda function triggered by S3 events.
 
