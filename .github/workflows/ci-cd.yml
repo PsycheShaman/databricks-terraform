@@ -1,12 +1,12 @@
-name: Houseful Technical Interview CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main
+      - main  # Change this to your default branch if different
   pull_request:
     branches:
-      - main
+      - main  # Change this to your default branch if different
 
 jobs:
   build-and-deploy:
@@ -34,10 +34,13 @@ jobs:
     - name: Install zip
       run: sudo apt-get install zip -y
 
+    - name: List files
+      run: ls -R
+
     - name: Zip Lambda Functions
       run: |
         cd lambda_functions/zoopla_publishing_service && zip -r ../../terraform/zoopla_publishing_service.zip lambda_function.py
-        cd lambda_functions/raw_listings_s3_event_lambda && zip -r ../../terraform/raw_listings_s3_event_lambda.zip lambda_function.py
+        cd ../raw_listings_s3_event_lambda && zip -r ../../terraform/raw_listings_s3_event_lambda.zip lambda_function.py
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
