@@ -50,9 +50,14 @@ resource "databricks_job" "listings_pipeline_job" {
     }
 
     new_cluster {
-      num_workers   = 1
+      num_workers   = 3
       spark_version = data.databricks_spark_version.latest.id
-      node_type_id  = data.databricks_node_type.smallest.id
+      node_type_id  = "i3.xlarge"
+      spark_conf = {
+        "spark.driver.memory" = "16g"  
+        "spark.executor.memory" = "16g"  
+        "spark.sql.shuffle.partitions" = "200"  
+      }
     }
   }
 }
