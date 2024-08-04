@@ -19,6 +19,8 @@ The solution consists of two main parts:
 
 1. **Lambda Functions**: For handling the publishing service and the ingestion of listing CRUD events.
 2. **Data Pipeline**: Using Delta Live Tables (DLT) to process and manage the data, implementing both Bronze, Silver, and Gold tables, including an SCD2 table for historical changes.
+3. **CI/CD Pipeline**: Utilizing GitHub Actions for continuous integration and deployment.
+4. **Infrastructure as Code**: Managing infrastructure with Terraform.
 
 ---
 
@@ -40,6 +42,8 @@ This Lambda function captures the CRUD events from the publishing service and re
 - **Processing Events**: Retrieves the file contents for created objects and constructs a message payload.
 - **Storing Events**: Writes the processed events to a staging S3 bucket with a unique hash identifier.
 
+---
+
 ## Data Pipeline
 
 ### Bronze Table
@@ -57,3 +61,25 @@ This Lambda function captures the CRUD events from the publishing service and re
 ### Gold SCD2 Table
 
 - **Historical Listings Data**: Tracks the SCD Type 2 history for listings, including records that have been deleted, with start and end timestamps for validity and an `is_current` boolean to indicate the current record.
+
+---
+
+## Infrastructure as Code (IaC)
+
+### Terraform
+
+The infrastructure is managed in its entirety by Terraform.
+
+---
+
+## CI/CD Pipeline
+
+### GitHub Actions
+
+GitHub Actions is used for continuous integration and deployment. The workflow automates the following steps:
+
+1. **Zipping Lambda Functions**: Packages the Lambda functions.
+2. **Terraform Initialization**: Initializes Terraform in the workspace.
+3. **Terraform Plan and Apply**: Applies the Terraform plan to deploy the infrastructure.
+
+The CI/CD pipeline ensures that any changes to the codebase or infrastructure are automatically tested and deployed, maintaining consistency and reliability in the deployment process.
