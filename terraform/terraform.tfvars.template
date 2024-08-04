@@ -1,0 +1,8 @@
+databricks_host           = "${DATABRICKS_HOST}"
+databricks_client_id      = "${DATABRICKS_CLIENT_ID}"
+databricks_client_secret  = "${DATABRICKS_CLIENT_SECRET}"
+lambda_exec_role_id       = "${LAMBDA_ROLE_ID}"
+lambda_exec_role_name     = "${LAMBDA_ROLE_NAME}"
+git_personal_access_token = "${GIT_PAT_TOKEN}"
+aws_access_key_id         = "${AWS_ACCESS_KEY_ID}"
+aws_secret_access_key     = "${AWS_SECRET_ACCESS_KEY}"

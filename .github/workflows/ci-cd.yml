@@ -45,6 +45,17 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1  # Adjust the region as necessary
+
+    - name: Generate terraform.tfvars
+      run: |
+        envsubst < terraform/terraform.tfvars.template > terraform/terraform.tfvars
+
     - name: Terraform Init
       working-directory: terraform
       run: terraform init
@@ -60,14 +71,7 @@ jobs:
     - name: Terraform Plan
       id: plan
       working-directory: terraform
-      run: terraform plan -out=tfplan -var databricks_host="${{ secrets.DATABRICKS_HOST }}" \
-                          -var databricks_client_id="${{ secrets.DATABRICKS_CLIENT_ID }}" \
-                          -var databricks_client_secret="${{ secrets.DATABRICKS_CLIENT_SECRET }}" \
-                          -var lambda_exec_role_id="${{ secrets.LAMBDA_ROLE_ID }}" \
-                          -var lambda_exec_role_name="${{ secrets.LAMBDA_ROLE_NAME }}" \
-                          -var git_personal_access_token="${{ secrets.GIT_PAT_TOKEN }}" \
-                          -var aws_access_key_id="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-                          -var aws_secret_access_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+      run: terraform plan -out=tfplan
 
     - name: Terraform Apply
       working-directory: terraform
