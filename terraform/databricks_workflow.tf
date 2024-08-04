@@ -54,9 +54,9 @@ resource "databricks_job" "listings_pipeline_job" {
       spark_version = data.databricks_spark_version.latest.id
       node_type_id  = "i3.xlarge"
       spark_conf = {
-        "spark.driver.memory" = "16g"  
-        "spark.executor.memory" = "16g"  
-        "spark.sql.shuffle.partitions" = "200"  
+        "spark.driver.memory"          = "16g"
+        "spark.executor.memory"        = "16g"
+        "spark.sql.shuffle.partitions" = "200"
       }
     }
   }
