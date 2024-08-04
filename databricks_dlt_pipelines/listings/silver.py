@@ -85,6 +85,8 @@ def listings_silver_stream():
         )
     )
 
+dlt.create_streaming_table("listings_scd2")
+
 dlt.apply_changes(
     target="listings_scd2",
     source="listings_silver_stream",
