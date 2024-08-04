@@ -1,0 +1,71 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+      LAMBDA_ROLE_ID: ${{ secrets.LAMBDA_ROLE_ID }}
+      LAMBDA_ROLE_NAME: ${{ secrets.LAMBDA_ROLE_NAME }}
+      GIT_PAT_TOKEN: ${{ secrets.GIT_PAT_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install zip
+      run: sudo apt-get install zip -y
+
+    - name: Zip Lambda Functions
+      run: |
+        cd lambda_functions/zoopla_publishing_service && zip -r ../../terraform/zoopla_publishing_service.zip lambda_function.py
+        cd lambda_functions/raw_listings_s3_event_lambda && zip -r ../../terraform/raw_listings_s3_event_lambda.zip lambda_function.py
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      working-directory: terraform
+      run: terraform init
+
+    - name: Terraform Format
+      working-directory: terraform
+      run: terraform fmt -check
+
+    - name: Terraform Validate
+      working-directory: terraform
+      run: terraform validate
+
+    - name: Terraform Plan
+      id: plan
+      working-directory: terraform
+      run: terraform plan -out=tfplan -var databricks_host="${{ secrets.DATABRICKS_HOST }}" \
+                          -var databricks_client_id="${{ secrets.DATABRICKS_CLIENT_ID }}" \
+                          -var databricks_client_secret="${{ secrets.DATABRICKS_CLIENT_SECRET }}" \
+                          -var lambda_exec_role_id="${{ secrets.LAMBDA_ROLE_ID }}" \
+                          -var lambda_exec_role_name="${{ secrets.LAMBDA_ROLE_NAME }}" \
+                          -var git_personal_access_token="${{ secrets.GIT_PAT_TOKEN }}" \
+                          -var aws_access_key_id="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+                          -var aws_secret_access_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+
+    - name: Terraform Apply
+      working-directory: terraform
+      run: terraform apply -auto-approve tfplan
