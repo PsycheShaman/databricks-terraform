@@ -80,32 +80,32 @@ resource "databricks_pipeline" "listings_gold" {
   }
 }
 
-resource "databricks_pipeline" "listings_gold_scd_2" {
+# resource "databricks_pipeline" "listings_gold_scd_2" {
 
-  name        = "Listings Gold SCD 2"
-  continuous  = false
-  development = true
-  catalog     = "houseful"
-  target      = "zoopla_gold"
+#   name        = "Listings Gold SCD 2"
+#   continuous  = false
+#   development = true
+#   catalog     = "houseful"
+#   target      = "zoopla_gold"
 
-  configuration = {
-    "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
-    "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
-    "spark.master"                   = "local[*]"
-  }
+#   configuration = {
+#     "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
+#     "spark.hadoop.fs.s3a.secret.key" = "{{secrets/aws-s3-access/aws-secret-access-key}}"
+#     "spark.master"                   = "local[*]"
+#   }
 
-  cluster {
-    label        = "default"
-    num_workers  = 1
-    node_type_id = "m5.large"
-  }
+#   cluster {
+#     label        = "default"
+#     num_workers  = 1
+#     node_type_id = "m5.large"
+#   }
 
-  library {
-    file {
-      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/listings/gold_scd2.py"
-    }
-  }
-}
+#   library {
+#     file {
+#       path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/listings/gold_scd2.py"
+#     }
+#   }
+# }
 
 # resource "databricks_pipeline" "original_end_to_end_listing_pipeline_deprecated" {
 #   name        = "End-End Listing Pipeline (Deprecated)"

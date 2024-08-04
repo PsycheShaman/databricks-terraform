@@ -40,7 +40,7 @@ resource "aws_lambda_function" "s3_and_table_count" {
 
   environment {
     variables = {
-      DATABRICKS_HOST = var.databricks_host
+      DATABRICKS_HOST  = var.databricks_host
       DATABRICKS_TOKEN = var.databricks_token
     }
   }
