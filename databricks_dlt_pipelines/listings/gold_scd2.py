@@ -11,7 +11,7 @@ from pyspark.sql.window import Window
 )
 def listings_scd2():
   # Read from the silver table
-  silver_df = dlt.read_stream("listings_silver")
+  silver_df = spark.table("houseful.zoopla_silver.listings")
 
   # Define the window specification for detecting changes
   window_spec = Window.partitionBy("listing_id").orderBy("event_time")
