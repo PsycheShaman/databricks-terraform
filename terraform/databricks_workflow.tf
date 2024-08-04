@@ -49,3 +49,4 @@ resource "databricks_job" "listings_pipeline_job" {
       pipeline_id = databricks_pipeline.listings_gold_scd_2.id
     }
   }
+}
