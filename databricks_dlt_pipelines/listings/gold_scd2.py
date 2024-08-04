@@ -18,6 +18,7 @@ def listings_scd2():
     sequence_by = col("event_time"),
     apply_as_deletes = col("event_type") == "delete",
     except_column_list = ["row_number", "bucket_name", "object_key", "event_id", "event_type"],
-    stored_as_scd_type = "2"
+    stored_as_scd_type = "2",
+    query_name = "listings_scd2_apply_changes"
   )
 

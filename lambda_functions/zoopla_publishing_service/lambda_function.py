@@ -5,7 +5,7 @@ from datetime import datetime
 
 s3 = boto3.client('s3')
 BUCKET_NAME = 'zoopla-raw'
-LISTING_ID_RANGE = 100
+LISTING_ID_RANGE = 10000
 
 # Predefined lists for generating realistic data
 street_names = [
@@ -64,7 +64,7 @@ def generate_listing(listing_id):
     return listing
 
 def lambda_handler(event, context):
-    for _ in range(10):
+    for _ in range(1000):
         listing_id = str(random.randint(1, LISTING_ID_RANGE)).zfill(6)
 
         try:
