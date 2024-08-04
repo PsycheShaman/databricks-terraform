@@ -39,14 +39,4 @@ resource "databricks_job" "listings_pipeline_job" {
       pipeline_id = databricks_pipeline.listings_gold.id
     }
   }
-
-  # task {
-  #   task_key = "gold_scd2_task"
-  #   depends_on {
-  #     task_key = "gold_task"
-  #   }
-  #   pipeline_task {
-  #     pipeline_id = databricks_pipeline.listings_gold_scd_2.id
-  #   }
-  # }
 }
