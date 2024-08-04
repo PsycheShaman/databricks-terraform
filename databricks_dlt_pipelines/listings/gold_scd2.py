@@ -1,149 +1,46 @@
-# gold_scd2.py
-from pyspark.sql import SparkSession
+import dlt
+from pyspark.sql.functions import col, current_timestamp, lit, lead, when
+from pyspark.sql.window import Window
 
-def run_merge():
-    spark = SparkSession.builder.appName("MergeListings").getOrCreate()
+@dlt.table(
+  name="listings_scd2",
+  comment="Gold table: Listings SCD Type 2 to view historical changes",
+  table_properties={
+    "quality": "gold"
+  }
+)
+def listings_scd2():
+  # Read from the silver table
+  silver_df = dlt.read_stream("listings_silver")
 
-    # Create the listings_scd_2 table if it doesn't already exist
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS houseful.zoopla_gold.listings_scd_2 (
-      listing_id STRING,
-      source STRING,
-      parking STRING,
-      outside_space STRING,
-      price DOUBLE,
-      transaction_type STRING,
-      category STRING,
-      latitude DOUBLE,
-      longitude DOUBLE,
-      postal_code STRING,
-      street_name STRING,
-      country_code STRING,
-      town_or_city STRING,
-      bathrooms INT,
-      creation_date TIMESTAMP,
-      total_bedrooms INT,
-      display_address STRING,
-      life_cycle_status STRING,
-      summary_description STRING,
-      start_date TIMESTAMP,
-      end_date TIMESTAMP,
-      is_current BOOLEAN
-    )
-    """
-    
-    spark.sql(create_table_query)
+  # Define the window specification for detecting changes
+  window_spec = Window.partitionBy("listing_id").orderBy("event_time")
 
-    merge_query = """
-    MERGE INTO houseful.zoopla_gold.listings_scd_2 AS target
-    USING (
-      SELECT
-        listing_id,
-        source,
-        parking,
-        outside_space,
-        price,
-        transaction_type,
-        category,
-        latitude,
-        longitude,
-        postal_code,
-        street_name,
-        country_code,
-        town_or_city,
-        bathrooms,
-        creation_date,
-        total_bedrooms,
-        display_address,
-        life_cycle_status,
-        summary_description,
-        event_time AS start_date,
-        NULL AS end_date,
-        TRUE AS is_current,
-        event_type
-      FROM houseful.zoopla_silver.listings
-    ) AS source
-    ON target.listing_id = source.listing_id AND target.is_current = TRUE
-    WHEN MATCHED AND source.event_type = 'delete' THEN
-      UPDATE SET
-        target.end_date = source.start_date,
-        target.is_current = FALSE
-    WHEN MATCHED AND (
-        target.source <> source.source OR
-        target.parking <> source.parking OR
-        target.outside_space <> source.outside_space OR
-        target.price <> source.price OR
-        target.transaction_type <> source.transaction_type OR
-        target.category <> source.category OR
-        target.latitude <> source.latitude OR
-        target.longitude <> source.longitude OR
-        target.postal_code <> source.postal_code OR
-        target.street_name <> source.street_name OR
-        target.country_code <> source.country_code OR
-        target.town_or_city <> source.town_or_city OR
-        target.bathrooms <> source.bathrooms OR
-        target.creation_date <> source.creation_date OR
-        target.total_bedrooms <> source.total_bedrooms OR
-        target.display_address <> source.display_address OR
-        target.life_cycle_status <> source.life_cycle_status OR
-        target.summary_description <> source.summary_description
-    ) THEN
-      UPDATE SET
-        target.end_date = source.start_date,
-        target.is_current = FALSE
-    WHEN NOT MATCHED THEN
-      INSERT (
-        listing_id,
-        source,
-        parking,
-        outside_space,
-        price,
-        transaction_type,
-        category,
-        latitude,
-        longitude,
-        postal_code,
-        street_name,
-        country_code,
-        town_or_city,
-        bathrooms,
-        creation_date,
-        total_bedrooms,
-        display_address,
-        life_cycle_status,
-        summary_description,
-        start_date,
-        end_date,
-        is_current
-      )
-      VALUES (
-        source.listing_id,
-        source.source,
-        source.parking,
-        source.outside_space,
-        source.price,
-        source.transaction_type,
-        source.category,
-        source.latitude,
-        source.longitude,
-        source.postal_code,
-        source.street_name,
-        source.country_code,
-        source.town_or_city,
-        source.bathrooms,
-        source.creation_date,
-        source.total_bedrooms,
-        source.display_address,
-        source.life_cycle_status,
-        source.summary_description,
-        source.start_date,
-        source.end_date,
-        source.is_current
-      )
-    """
+  # Determine the start and end dates for each record
+  scd2_df = (
+    silver_df
+    .withColumn("start_date", col("event_time"))
+    .withColumn("end_date", lead(col("event_time"), 1).over(window_spec))
+    .withColumn("is_current", when(lead(col("event_time"), 1).over(window_spec).isNull(), True).otherwise(False))
+  )
 
-    spark.sql(merge_query)
-    spark.stop()
+  # Identify deleted records
+  delete_df = silver_df.filter(col("event_type") == "delete").select("listing_id", "event_time")
 
-if __name__ == "__main__":
-    run_merge()
+  # Update the is_current and end_date for deleted records
+  scd2_df = (
+    scd2_df
+    .join(delete_df, "listing_id", "left")
+    .withColumn("is_current", when(col("delete_df.event_time").isNotNull(), False).otherwise(col("is_current")))
+    .withColumn("end_date", when(col("delete_df.event_time").isNotNull(), col("delete_df.event_time")).otherwise(col("end_date")))
+  )
+
+  return scd2_df
+
+@dlt.table(
+  name="current_listings",
+  comment="Gold table: Current active listings"
+)
+@dlt.expect_or_drop("valid_is_current", col("is_current") == True)
+def current_listings():
+  return dlt.read("listings_scd2").filter(col("is_current") == True)
