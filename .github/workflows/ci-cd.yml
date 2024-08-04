@@ -21,6 +21,7 @@ jobs:
       GIT_PAT_TOKEN: ${{ secrets.GIT_PAT_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DBR_TOK: ${{ secrets.DBR_TOK }}
 
     steps:
     - name: Checkout code

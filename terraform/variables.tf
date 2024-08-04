@@ -77,3 +77,8 @@ variable "workspace_id" {
   type    = string
   default = "2905500365526979"
 }
+
+variable "databricks_token" {
+  type    = string
+  sensitive = true
+}
