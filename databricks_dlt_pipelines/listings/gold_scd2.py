@@ -1,7 +1,7 @@
 import dlt
-from pyspark.sql.functions import col, current_timestamp, lit, lead, when
-from pyspark.sql.window import Window
+from pyspark.sql.functions import col
 
+# Define the SCD Type 2 table using apply_changes
 @dlt.table(
   name="listings_scd2",
   comment="Gold table: Listings SCD Type 2 to view historical changes",
@@ -9,38 +9,15 @@ from pyspark.sql.window import Window
     "quality": "gold"
   }
 )
+@dlt.expect_or_drop("valid_event_type", col("event_type").isin("create", "update", "delete"))
 def listings_scd2():
-  # Read from the silver table
-  silver_df = spark.table("houseful.zoopla_silver.listings")
-
-  # Define the window specification for detecting changes
-  window_spec = Window.partitionBy("listing_id").orderBy("event_time")
-
-  # Determine the start and end dates for each record
-  scd2_df = (
-    silver_df
-    .withColumn("start_date", col("event_time"))
-    .withColumn("end_date", lead(col("event_time"), 1).over(window_spec))
-    .withColumn("is_current", when(lead(col("event_time"), 1).over(window_spec).isNull(), True).otherwise(False))
+  return dlt.apply_changes(
+    target = "listings_scd2",
+    source = "houseful.zoopla_silver.listings",
+    keys = ["listing_id"],
+    sequence_by = col("event_time"),
+    apply_as_deletes = col("event_type") == "delete",
+    except_column_list = ["row_number", "bucket_name", "object_key", "event_id", "event_type"],
+    stored_as_scd_type = "2"
   )
 
-  # Identify deleted records
-  delete_df = silver_df.filter(col("event_type") == "delete").select("listing_id", "event_time")
-
-  # Update the is_current and end_date for deleted records
-  scd2_df = (
-    scd2_df
-    .join(delete_df, "listing_id", "left")
-    .withColumn("is_current", when(col("delete_df.event_time").isNotNull(), False).otherwise(col("is_current")))
-    .withColumn("end_date", when(col("delete_df.event_time").isNotNull(), col("delete_df.event_time")).otherwise(col("end_date")))
-  )
-
-  return scd2_df
-
-@dlt.table(
-  name="current_listings",
-  comment="Gold table: Current active listings"
-)
-@dlt.expect_or_drop("valid_is_current", col("is_current") == True)
-def current_listings():
-  return dlt.read("listings_scd2").filter(col("is_current") == True)
