@@ -1,8 +1,8 @@
 import dlt
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, expr
 
 @dlt.view
-def listings_silver():
+def listings_silver_stream():
     return (
         spark.table("houseful.zoopla_silver.listings")
         .select(
@@ -33,14 +33,13 @@ def listings_silver():
         )
     )
 
-dlt.create_streaming_table("listings_scd2")
-
+# Apply changes using the apply_changes API to create the SCD Type 2 table
 dlt.apply_changes(
-    target = "listings_scd2",
-    source = "listings_silver",
-    keys = ["listing_id"],
-    sequence_by = col("event_time"),
-    apply_as_deletes = col("event_type") == "delete",
-    except_column_list = ["bucket_name", "object_key", "event_id", "event_type"],
-    stored_as_scd_type = "2"
+    target="listings_scd2",
+    source="listings_silver_stream",
+    keys=["listing_id"],
+    sequence_by=col("event_time"),
+    apply_as_deletes=expr("event_type = 'delete'"),
+    except_column_list=["bucket_name", "object_key", "event_id", "event_type"],
+    stored_as_scd_type="2"
 )
