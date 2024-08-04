@@ -72,3 +72,8 @@ variable "aws_secret_access_key" {
   type      = string
   sensitive = true
 }
+
+variable "workspace_id" {
+  type    = string
+  default = "2905500365526979"
+}
