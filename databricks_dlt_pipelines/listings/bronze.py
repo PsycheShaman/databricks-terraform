@@ -45,7 +45,7 @@ schema = StructType([
 # Read messages from the staging directory using Auto Loader
 @dlt.table(
   name="listings",
-  comment="Bronze table: Raw listings data containing S3 events relating to json objects for zoopla listings",
+  comment="Bronze table: Raw listings data containing S3 events relating to json objects for sales_and_rentals listings",
   table_properties={
     "quality": "bronze"
   }
@@ -60,5 +60,5 @@ def raw_listings_s3_events():
     .option("cloudFiles.awsAccessKey", dbutils.secrets.get("aws-s3-access", "aws-access-key-id"))
     .option("cloudFiles.awsSecretKey", dbutils.secrets.get("aws-s3-access", "aws-secret-access-key"))
     .schema(schema)
-    .load("s3a://zoopla-staging/listings/")
+    .load("s3a://sales_and_rentals-staging/listings/")
   )

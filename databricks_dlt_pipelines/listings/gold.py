@@ -10,7 +10,7 @@ from pyspark.sql.window import Window
   }
 )
 def listings_gold():
-  silver_df = spark.table("houseful.zoopla_silver.listings")
+  silver_df = spark.table("real_estate_inc.sales_and_rentals_silver.listings")
   
   # Define the window specification
   window_spec = Window.partitionBy("listing_id").orderBy(col("event_time").desc())

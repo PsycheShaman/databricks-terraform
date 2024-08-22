@@ -9,7 +9,7 @@ from pyspark.sql.functions import col, expr
   }
 )
 def listings_silver():
-  bronze_df = spark.table("houseful.zoopla_bronze.listings")
+  bronze_df = spark.table("real_estate_inc.sales_and_rentals_bronze.listings")
   
   # Flatten the file_contents JSON structure
   flattened_df = bronze_df.select(
@@ -56,7 +56,7 @@ def listings_silver():
 )
 def listings_silver_stream():
     return (
-        spark.table("houseful.zoopla_silver.listings")
+        spark.table("real_estate_inc.sales_and_rentals_silver.listings")
         .select(
             col("bucket_name"),
             col("object_key"),

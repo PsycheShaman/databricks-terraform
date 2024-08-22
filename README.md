@@ -1,17 +1,10 @@
-# Houseful Technical Interview Submission
+# Databricks Terraform
 
-This repository contains the solution for the scenario-based question provided during the Houseful technical interview. The goal is to design a CI/CD pipeline and a data ingestion/processing pipeline that takes the data from source to target for the Zoopla web application's backend service.
+The goal of this repo is to design a CI/CD pipeline and a data ingestion/processing pipeline that takes real estate listing data simulated by a Lambda funtion into S3, ingests it into Databricks via Autoloader and transforms it through a medallion architecture of Delta Live Tables in order to expose it as a Databricks Dashboard.
 
 ## Scenario Overview
 
-We have a backend service, the "publishing service," that handles listings from estate agents and emits JSON messages stored in an S3 bucket. These messages are emitted when a listing is created, updated, or deleted.
-
-## Requirements
-
-1. **One row per listing, per day the listing is live on the site**
-2. **One column per each property in the JSON document**
-3. **No nested fields**
-4. **Table available for query from a Data Warehouse**
+Real Estate Inc. has a backend service, which emits JSON messages to an S3 bucket, whenever a listing on their website is created, updated, or deleted. This data needs to be flattened and consumed via a dashboard, containing only the currently active listings on the website.
 
 ## Solution Overview
 
@@ -26,7 +19,7 @@ The solution consists of two main parts:
 
 ## Lambda Functions
 
-### Zoopla Publishing Service (`zoopla_publishing_service`)
+### sales_and_rentals Publishing Service (`sales_and_rentals_publishing_service`)
 
 This Lambda function simulates the behavior of the publishing service by generating and updating listings. It handles:
 
@@ -48,7 +41,7 @@ This Lambda function captures the CRUD events from the publishing service and re
 
 ### Bronze Table
 
-- **Raw Listings Data**: Contains raw listings data with S3 events, capturing JSON objects from the Zoopla listings.
+- **Raw Listings Data**: Contains raw listings data with S3 events, capturing JSON objects from the sales_and_rentals listings.
 
 ### Silver Table
 

@@ -1,14 +1,14 @@
-resource "databricks_schema" "zoopla_bronze" {
-  catalog_name = "houseful"
-  name         = "zoopla_bronze"
+resource "databricks_schema" "sales_and_rentals_bronze" {
+  catalog_name = "real_estate_inc"
+  name         = "sales_and_rentals_bronze"
 }
 
-resource "databricks_schema" "zoopla_silver" {
-  catalog_name = "houseful"
-  name         = "zoopla_silver"
+resource "databricks_schema" "sales_and_rentals_silver" {
+  catalog_name = "real_estate_inc"
+  name         = "sales_and_rentals_silver"
 }
 
-resource "databricks_schema" "zoopla_gold" {
-  catalog_name = "houseful"
-  name         = "zoopla_gold"
+resource "databricks_schema" "sales_and_rentals_gold" {
+  catalog_name = "real_estate_inc"
+  name         = "sales_and_rentals_gold"
 }

@@ -1,9 +1,9 @@
-resource "aws_lambda_function" "zoopla_publisher_service" {
-  filename         = "zoopla_publishing_service.zip"
-  function_name    = "zoopla_publisher_service"
+resource "aws_lambda_function" "sales_and_rentals_publisher_service" {
+  filename         = "sales_and_rentals_publishing_service.zip"
+  function_name    = "sales_and_rentals_publisher_service"
   role             = var.lambda_exec_role_id
   handler          = "lambda_function.lambda_handler"
-  source_code_hash = filebase64sha256("zoopla_publishing_service.zip")
+  source_code_hash = filebase64sha256("sales_and_rentals_publishing_service.zip")
   runtime          = "python3.10"
   timeout          = 60
 

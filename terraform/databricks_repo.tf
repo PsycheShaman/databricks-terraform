@@ -1,5 +1,5 @@
 
-resource "databricks_repo" "houseful_technical_interview" {
+resource "databricks_repo" "databricks_terraform" {
   url = var.git_url
 }
 

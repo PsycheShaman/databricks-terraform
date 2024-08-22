@@ -1,75 +1,75 @@
-name: CI/CD Pipeline
+# name: CI/CD Pipeline
 
-on:
-  push:
-    branches:
-      - main  # Change this to your default branch if different
-  pull_request:
-    branches:
-      - main  # Change this to your default branch if different
+# on:
+#   push:
+#     branches:
+#       - main  # Change this to your default branch if different
+#   pull_request:
+#     branches:
+#       - main  # Change this to your default branch if different
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
 
-    env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
-      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
-      LAMBDA_ROLE_ID: ${{ secrets.LAMBDA_ROLE_ID }}
-      LAMBDA_ROLE_NAME: ${{ secrets.LAMBDA_ROLE_NAME }}
-      GIT_PAT_TOKEN: ${{ secrets.GIT_PAT_TOKEN }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DBR_TOK: ${{ secrets.DBR_TOK }}
+#     env:
+#       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+#       DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+#       DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+#       LAMBDA_ROLE_ID: ${{ secrets.LAMBDA_ROLE_ID }}
+#       LAMBDA_ROLE_NAME: ${{ secrets.LAMBDA_ROLE_NAME }}
+#       GIT_PAT_TOKEN: ${{ secrets.GIT_PAT_TOKEN }}
+#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#       DBR_TOK: ${{ secrets.DBR_TOK }}
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+#     - name: Set up Python
+#       uses: actions/setup-python@v2
+#       with:
+#         python-version: '3.8'
 
-    - name: Install zip
-      run: sudo apt-get install zip -y
+#     - name: Install zip
+#       run: sudo apt-get install zip -y
 
-    - name: List files
-      run: ls -R
+#     - name: List files
+#       run: ls -R
 
-    - name: Zip Lambda Functions
-      run: |
-        cd lambda_functions/zoopla_publishing_service && zip -r ../../terraform/zoopla_publishing_service.zip lambda_function.py
-        cd ../raw_listings_s3_event_lambda && zip -r ../../terraform/raw_listings_s3_event_lambda.zip lambda_function.py
+#     - name: Zip Lambda Functions
+#       run: |
+#         cd lambda_functions/sales_and_rentals_publishing_service && zip -r ../../terraform/sales_and_rentals_publishing_service.zip lambda_function.py
+#         cd ../raw_listings_s3_event_lambda && zip -r ../../terraform/raw_listings_s3_event_lambda.zip lambda_function.py
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
+#     - name: Set up Terraform
+#       uses: hashicorp/setup-terraform@v1
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-1  # Adjust the region as necessary
+#     - name: Configure AWS Credentials
+#       uses: aws-actions/configure-aws-credentials@v1
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: eu-west-1  # Adjust the region as necessary
 
-    - name: Generate terraform.tfvars
-      run: |
-        envsubst < terraform/terraform.tfvars.template > terraform/terraform.tfvars
+#     - name: Generate terraform.tfvars
+#       run: |
+#         envsubst < terraform/terraform.tfvars.template > terraform/terraform.tfvars
 
-    - name: Terraform Init
-      working-directory: terraform
-      run: terraform init
+#     - name: Terraform Init
+#       working-directory: terraform
+#       run: terraform init
 
-    - name: Terraform Validate
-      working-directory: terraform
-      run: terraform validate
+#     - name: Terraform Validate
+#       working-directory: terraform
+#       run: terraform validate
 
-    - name: Terraform Plan
-      id: plan
-      working-directory: terraform
-      run: terraform plan -out=tfplan
+#     - name: Terraform Plan
+#       id: plan
+#       working-directory: terraform
+#       run: terraform plan -out=tfplan
 
-    - name: Terraform Apply
-      working-directory: terraform
-      run: terraform apply -auto-approve tfplan
+#     - name: Terraform Apply
+#       working-directory: terraform
+#       run: terraform apply -auto-approve tfplan

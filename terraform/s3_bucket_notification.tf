@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = aws_s3_bucket.zoopla_raw.id
+  bucket = aws_s3_bucket.sales_and_rentals_raw.id
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.raw_listings_s3_event_lambda.arn
@@ -16,5 +16,5 @@ resource "aws_lambda_permission" "allow_s3_to_invoke" {
   function_name = aws_lambda_function.raw_listings_s3_event_lambda.function_name
   principal     = "s3.amazonaws.com"
 
-  source_arn = aws_s3_bucket.zoopla_raw.arn
+  source_arn = aws_s3_bucket.sales_and_rentals_raw.arn
 }

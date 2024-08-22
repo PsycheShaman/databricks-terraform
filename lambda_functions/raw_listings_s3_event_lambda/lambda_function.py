@@ -56,7 +56,7 @@ def lambda_handler(event, context):
         # Write message payload to S3
         try:
             s3.put_object(
-                Bucket='zoopla-staging',
+                Bucket='sales_and_rentals-staging',
                 Key=s3_key,
                 Body=json.dumps(message_payload)
             )

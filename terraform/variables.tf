@@ -9,7 +9,7 @@ variable "aws_region" {
 variable "s3_bucket" {
   description = "S3 bucket for storing listings"
   type        = string
-  default     = "zoopla-raw"
+  default     = "sales_and_rentals-raw"
 }
 
 variable "databricks_host" {

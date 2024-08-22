@@ -4,8 +4,8 @@ resource "databricks_pipeline" "listings_bronze" {
   name        = "Listings Bronze"
   continuous  = false
   development = true
-  catalog     = "houseful"
-  target      = "zoopla_bronze"
+  catalog     = "real_estate_inc"
+  target      = "sales_and_rentals_bronze"
 
   configuration = {
     "spark.master"                   = "local[*]"
@@ -21,7 +21,7 @@ resource "databricks_pipeline" "listings_bronze" {
 
   library {
     file {
-      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/listings/bronze.py"
+      path = "${databricks_repo.databricks_terraform.path}/databricks_dlt_pipelines/listings/bronze.py"
     }
   }
 }
@@ -31,8 +31,8 @@ resource "databricks_pipeline" "listings_silver" {
   name        = "Listings Silver"
   continuous  = false
   development = true
-  catalog     = "houseful"
-  target      = "zoopla_silver"
+  catalog     = "real_estate_inc"
+  target      = "sales_and_rentals_silver"
 
   configuration = {
     "spark.master"                   = "local[*]"
@@ -48,7 +48,7 @@ resource "databricks_pipeline" "listings_silver" {
 
   library {
     file {
-      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/listings/silver.py"
+      path = "${databricks_repo.databricks_terraform.path}/databricks_dlt_pipelines/listings/silver.py"
     }
   }
 }
@@ -58,8 +58,8 @@ resource "databricks_pipeline" "listings_gold" {
   name        = "Listings Gold"
   continuous  = false
   development = true
-  catalog     = "houseful"
-  target      = "zoopla_gold"
+  catalog     = "real_estate_inc"
+  target      = "sales_and_rentals_gold"
 
   configuration = {
     "spark.hadoop.fs.s3a.access.key" = "{{secrets/aws-s3-access/aws-access-key-id}}"
@@ -75,7 +75,7 @@ resource "databricks_pipeline" "listings_gold" {
 
   library {
     file {
-      path = "${databricks_repo.houseful_technical_interview.path}/databricks_dlt_pipelines/listings/gold.py"
+      path = "${databricks_repo.databricks_terraform.path}/databricks_dlt_pipelines/listings/gold.py"
     }
   }
 }
