@@ -1,6 +1,8 @@
 # Databricks Terraform
 
-The goal of this repo is to design a CI/CD pipeline and a data ingestion/processing pipeline that takes real estate listing data simulated by a Lambda funtion into S3, ingests it into Databricks via Autoloader and transforms it through a medallion architecture of Delta Live Tables in order to expose it as a Databricks Dashboard.
+The goal of this repo is to show off some of my skills in Databricks and Terraform, I hope you enjoy it ;) 
+
+In order to do this, I designed a CI/CD pipeline and a data ingestion/processing pipeline that takes real estate listing data simulated by a Lambda funtion into S3, ingests it into Databricks via Autoloader and transforms it through a medallion architecture of Delta Live Tables in order to expose it as a Databricks Dashboard.
 
 ## Scenario Overview
 
