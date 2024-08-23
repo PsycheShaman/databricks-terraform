@@ -43,7 +43,7 @@ variable "lambda_exec_role_name" {
 variable "git_url" {
   description = "URL of the Git repository"
   type        = string
-  default     = "https://github.com/PsycheShaman/houseful-technical-interview.git"
+  default     = "https://github.com/PsycheShaman/databricks-terraform.git"
 }
 
 variable "git_branch" {
